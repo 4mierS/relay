@@ -1,0 +1,48 @@
+{
+  "name": "relay",
+  "displayName": "relay",
+  "version": "0.1.0",
+  "description": "When the context gets large, Claude writes a handoff at the end of the task. After /clear, the fresh session asks whether to pick it up.",
+  "author": { "name": "Amier", "url": "https://amierdev.com" },
+  "homepage": "https://github.com/4mierS/relay",
+  "repository": "https://github.com/4mierS/relay",
+  "license": "MIT",
+  "keywords": ["context", "handoff", "session", "clear", "compact", "tokens"],
+  "userConfig": {
+    "threshold_tokens": {
+      "type": "number",
+      "title": "Threshold (tokens)",
+      "description": "Context size at which Claude writes a handoff at the end of a turn. 0 disables relay.",
+      "default": 130000,
+      "min": 0
+    },
+    "on_new_session": {
+      "type": "string",
+      "title": "On new session",
+      "description": "After /clear or startup: ask whether to pick up the handoff, load it automatically, or do nothing.",
+      "options": ["ask", "auto", "off"],
+      "default": "ask"
+    },
+    "on_decline": {
+      "type": "string",
+      "title": "If you keep going",
+      "description": "If you continue in the same session instead of /clear: stay quiet (ignore) or write a fresh handoff later (remind).",
+      "options": ["ignore", "remind"],
+      "default": "ignore"
+    },
+    "remind_every_tokens": {
+      "type": "number",
+      "title": "Remind every (tokens)",
+      "description": "With 'remind': how much the context must grow before the next handoff.",
+      "default": 30000,
+      "min": 5000
+    },
+    "max_age_hours": {
+      "type": "number",
+      "title": "Max handoff age (hours)",
+      "description": "Older handoffs are not offered in a new session (still available via /relay:resume).",
+      "default": 24,
+      "min": 1
+    }
+  }
+}

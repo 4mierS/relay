@@ -1,0 +1,12 @@
+{
+  "name": "relay",
+  "description": "Hand off to a fresh Claude Code session at the end of a task instead of compacting mid-work.",
+  "owner": { "name": "Amier", "url": "https://amierdev.com" },
+  "plugins": [
+    {
+      "name": "relay",
+      "source": "./",
+      "description": "When the context gets large, Claude writes a handoff at the end of the task. After /clear, the fresh session asks whether to pick it up."
+    }
+  ]
+}
