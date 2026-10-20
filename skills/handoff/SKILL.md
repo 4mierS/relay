@@ -19,6 +19,6 @@ Use this structure, in Markdown without code fences, under 6000 characters:
 
 Use exact paths, commands, names and IDs. Do not narrate the session.
 
-After the block, tell the user in one line, in their language, to type `/clear`. The next session will offer to continue from the handoff.
+After the block, tell the user in one line, in their language, to type `/clear`. The next session in this terminal will offer to continue from the handoff. Other terminals in the same project see it in a list.
 
 If there is no follow-up work, say so in one line and print no block.

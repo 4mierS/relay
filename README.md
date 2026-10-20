@@ -13,7 +13,22 @@ relay ─► "Found a handoff from 2 min ago: 'Finish contact form'. Continue fr
 ja ────► Claude reads it and carries on, with a ~2k context instead of 134k
 ```
 
-If nothing is left to do, Claude just says so and nothing is saved. If you want an unrelated new session, say no and the handoff is ignored.
+If nothing is left to do, Claude just says so and nothing is saved. If you want an unrelated new session, say no and the handoff is ignored. If Claude's last reply was a question to you, relay waits for the next turn instead of interrupting.
+
+### Several sessions in one project
+
+Every handoff is its own file, tagged with the session and terminal that wrote it, plus the git branch and commit.
+
+- After `/clear`, a terminal only gets **its own** handoff. Parallel sessions in the same project never take or overwrite each other's handoffs.
+- A **new terminal** lists the handoffs that are waiting and asks which one to continue:
+  ```
+  relay: 2 handoffs from other sessions are waiting. Claude will ask which one to pick up.
+  1. "Auth refactor" (written 12 min ago on branch feat/auth)
+  2. "Landing page copy" (written 3 h ago on branch main)
+  ```
+  Saying no leaves them waiting for their own terminals.
+- If the branch changed since the handoff was written, Claude points it out before continuing.
+- Handoffs form a chain: each one records the handoff its session started from (`previous`), so relay 1 → 2 → 3 stays traceable.
 
 ## Install
 
@@ -41,13 +56,18 @@ Each setting can also be overridden per shell with `RELAY_<SETTING>`, for exampl
 ## Commands
 
 - `/relay:handoff`: write a handoff now, whatever the context size.
-- `/relay:resume`: continue from the latest handoff in this project.
+- `/relay:resume`: continue from a waiting handoff in this project (asks which one if there are several), or from the last one picked up.
 
 ## How it works
 
-- A **Stop hook** reads the token usage of the last turn from the transcript. Past the threshold, it blocks the stop once and asks Claude for a handoff between `<relay-handoff>` tags. When Claude's reply contains that block, the same hook saves it to `.claude/relay/handoff.md`. Claude never writes the file itself, so you get no permission prompt, and you see the handoff in the chat.
-- A **SessionStart hook** (on `startup` and `/clear`) finds the handoff for the current project and either asks or loads it. Each handoff is offered once and then kept as `.claude/relay/last.md`.
-- `.claude/relay/` contains its own `.gitignore`, so nothing ends up in your repo.
+- A **Stop hook** reads the token usage of the last turn from the transcript. Past the threshold, it blocks the stop once and asks Claude for a handoff between `<relay-handoff>` tags. When Claude's reply contains that block, the same hook saves it to `.claude/relay/handoffs/<time>-<title>.md`. Claude never writes the file itself, so you get no permission prompt, and you see the handoff in the chat.
+- A **SessionStart hook** (on `startup` and `/clear`) looks at the waiting handoffs. After `/clear` it offers the one written by the same Claude process (`CLAUDE_PID` stays the same across `/clear`), then moves it to `.claude/relay/done/`. In a new terminal it lists the waiting ones and leaves them in place.
+- When a session reads a waiting handoff, the Stop hook moves it to `done/` and remembers it as that session's `previous`.
+- `.claude/relay/` contains its own `.gitignore`, so nothing ends up in your repo. Handoffs from relay 0.1 (`handoff.md`) are picked up automatically.
+
+## Other agents
+
+[`standalone/relay`](standalone/relay/SKILL.md) is a hook-free version as a single `SKILL.md` for Cursor, Codex CLI, Copilot, Gemini CLI and other agents that support skills. You trigger the handoff and the resume yourself. It uses the same files, so both versions can be used in the same project.
 
 ## Development
 

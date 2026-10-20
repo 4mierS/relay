@@ -1,7 +1,7 @@
 {
   "name": "relay",
   "displayName": "relay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "When the context gets large, Claude writes a handoff at the end of the task. After /clear, the fresh session asks whether to pick it up.",
   "author": { "name": "Amier", "url": "https://amierdev.com" },
   "homepage": "https://github.com/4mierS/relay",
